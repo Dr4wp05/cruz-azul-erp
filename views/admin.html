@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cruz Azul - Zona Crítica SSH</title>
+</head>
+<body style="font-family: sans-serif; padding: 40px; background: #1e1e1e; color: #2ecc71;">
+    <h1>Consola de Administración Abierta (MFA 3 Pasos)</h1>
+    
+    <div id="mfa3-block" style="background: #2c3e50; padding: 20px; border-radius: 5px; color: white; max-width: 400px;">
+        <h3>Validación de Tercer Factor Requerida</h3>
+        <p>Ingrese token dinámico de infraestructura:</p>
+        <input type="text" id="codigoAdmin" placeholder="Código Admin (987654)" style="padding: 8px; width: 80%;">
+        <button onclick="elevarA3Pasos()" style="padding: 8px; background: #27ae60; color: white; border:none;">Elevar Privilegios</button>
+    </div>
+
+    <h2 id="ssh-status" style="margin-top: 30px; display: none;">[CONEXIÓN ESTABLECIDA]</h2>
+    <p id="ssh-log"></p>
+
+    <script>
+        async function elevarA3Pasos() {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/auth/verificar-mfa-admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ codigoAdmin: document.getElementById('codigoAdmin').value })
+            });
+            const data = await res.json();
+            if(res.ok) {
+                localStorage.setItem('token', data.token); // Token final de paso 3
+                alert(data.mensaje);
+                document.getElementById('mfa3-block').style.display = 'none';
+                probarSSH();
+            } else { alert(data.error); }
+        }
+
+        async function probarSSH() {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/auth/servicio-ssh', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if(res.ok) {
+                document.getElementById('ssh-status').style.display = 'block';
+                document.getElementById('ssh-log').innerText = data.mensaje;
+            } else {
+                document.getElementById('ssh-log').innerText = "Acceso Denegado por Capa de Control Condicional: " + data.error;
+            }
+        }
+        // Intentar cargar por defecto (para forzar el fallo condicional si no tiene el paso 3)
+        probarSSH();
+    </script>
+</body>
+</html>

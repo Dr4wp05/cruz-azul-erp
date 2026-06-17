@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cruz Azul - Panel Interno</title>
+</head>
+<body style="font-family: sans-serif; padding: 40px;">
+    <h1>Panel Interno Autorizado (MFA 2 Pasos)</h1>
+    <p id="contenido">Cargando recursos seguros...</p>
+    <br><hr><br>
+    <h3>¿Requiere acceso a la administración del Servidor?</h3>
+    <button onclick="window.location.href='/admin.html'" style="padding: 10px; background: red; color: white; border:none; border-radius:4px; cursor:pointer;">
+        Solicitar Acceso Consola SSH (Requiere Paso 3)
+    </button>
+
+    <script>
+        async function cargarDatos() {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/auth/sitio-web', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if(res.ok) {
+                document.getElementById('contenido').innerText = data.mensaje;
+            } else {
+                document.getElementById('contenido').innerText = "Error: " + data.error;
+            }
+        }
+        cargarDatos();
+    </script>
+</body>
+</html>
