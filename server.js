@@ -2,14 +2,16 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 
-// Middleware para entender JSON y formularios
+const authRoutes = require('./routes/authRoutes');
+
+// Middlewares globales
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Servir archivos estáticos (HTML, CSS) desde la carpeta views
 app.use(express.static('views'));
 
-// Ruta base de prueba
+// Vincular las rutas de autenticación bajo el prefijo /api/auth
+app.use('/api/auth', authRoutes);
+
 app.get('/', (req, res) => {
   res.send('<h1>Portal de Autenticación - Farmacias Cruz Azul</h1>');
 });
