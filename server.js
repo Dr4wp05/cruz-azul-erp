@@ -12,8 +12,10 @@ app.use(express.static('views'));
 // Vincular las rutas de autenticación bajo el prefijo /api/auth
 app.use('/api/auth', authRoutes);
 
+const path = require('path');
+
 app.get('/', (req, res) => {
-  res.send('<h1>Portal de Autenticación - Farmacias Cruz Azul</h1>');
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
 const PORT = process.env.PORT || 3000;

@@ -3,7 +3,7 @@
 # Configuración
 FECHA=$(date +%Y-%m-%d_%H-%M-%S)
 ARCHIVO="backup_cruz_azul_$FECHA.sql"
-BUCKET="s3://cruz-azul-respaldos-rodriguez-parraguez" 
+BUCKET="s3://cruz-azul-respaldos-2026-rodriguez-parraguez" 
 ENDPOINT_RDS="cruz-azul-db.cr8s2ugi8ofk.us-east-1.rds.amazonaws.com" 
 
 # 1. Extraer la copia
